@@ -22,14 +22,20 @@ class ClassView(views.APIView):
     #     classes = Class.objects.annotate(num_students=Count('student'), 
     #                                      attendance_rating=Avg('student__attendance__rating')).values('id', 'name', 'num_students', 'attendance_rating')
     #     return Response(classes)
-    def get(self, request):
-        classes = Class.objects.all()
-        class_data = []
-        for c in classes:
-            num_students = Student.objects.filter(class_name=c).count()
-            average_attendance = Attendance.objects.filter(class_name=c).aggregate(average_attendance=Cast(Sum('present')/Count('id'), FloatField()))
-            class_data.append({'id':c.id,'class': c.name, 'num_students': num_students, 'average_attendance': average_attendance['average_attendance']})
-        return Response(class_data)
+    def get(self, request,id=None):
+        if id:
+            if Student.objects.filter(class_name=id).exists():
+                students = Student.objects.filter(class_name=id)
+                serializer = StudentSerializer(students,many=True)
+                return Response(serializer.data)
+        else:
+            classes = Class.objects.all()
+            class_data = []
+            for c in classes:
+                num_students = Student.objects.filter(class_name=c).count()
+                average_attendance = calculate_average_attendance_rating(c.id)
+                class_data.append({'id':c.id,'class': c.name, 'num_students': num_students, 'average_attendance': average_attendance})
+            return Response(class_data)
             
     def post(self, request):
         serializer = ClassSerializer(data=request.data)
