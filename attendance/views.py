@@ -8,20 +8,6 @@ from django.db.models import Count, Sum, F, Case, When
 from django.db.models.functions import Cast
 from django.db.models import FloatField
 class ClassView(views.APIView):
-    # def get(self, request, class_id=None):
-    #     if class_id:
-    #         classes = Class.objects.filter(id=class_id)
-    #         average_attendance_rating = calculate_average_attendance_rating(class_id)
-    #         serializer = ClassSerializer(classes, many=True)
-    #         return Response({'class': serializer.data, 'average_attendance_rating': average_attendance_rating})
-    #     else:
-    #         classes = Class.objects.all()
-    #         serializer = ClassSerializer(classes, many=True)
-    #         return Response(serializer.data)
-    # def get(self, request):
-    #     classes = Class.objects.annotate(num_students=Count('student'), 
-    #                                      attendance_rating=Avg('student__attendance__rating')).values('id', 'name', 'num_students', 'attendance_rating')
-    #     return Response(classes)
     def get(self, request,id=None):
         if id:
             if Student.objects.filter(class_name=id).exists():
